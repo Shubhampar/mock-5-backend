@@ -3,7 +3,7 @@ const EmployeeRouter = express.Router();
 const EmployeeModel = require("../Models/employeeModel");
 
 // Add Employee
-EmployeeRouter.post('/add', (req, res) => {
+EmployeeRouter.post('/add', async (req, res) => {
   const { firstName, lastName, email, department, salary } = req.body;
   const newEmployee = new EmployeeModel({
     firstName,
@@ -13,13 +13,12 @@ EmployeeRouter.post('/add', (req, res) => {
     salary,
   });
 
-  newEmployee.save((err, employee) => {
-    if (err) {
-      res.status(400).json({ error: err.message });
-    } else {
-      res.status(201).json(employee);
-    }
-  });
+  try {
+    const employee = await newEmployee.save();
+    res.status(201).json(employee);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 });
 
 // Retrieve employees with pagination, filter, sorting, and search
